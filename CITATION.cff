@@ -1,0 +1,63 @@
+# Citation metadata for HybriDet (built upon Ultralytics YOLOv8)
+
+cff-version: 1.2.0
+title: "HybriDet: A Hybrid Neural Network Combining CNN and Transformer for Wildfire Detection in Remote Sensing Imagery"
+message: >-
+  If you use this software, please cite the HybriDet paper using the
+  metadata below. This codebase is developed on top of Ultralytics YOLOv8;
+  please also cite Ultralytics when appropriate.
+type: software
+authors:
+  - given-names: Fengming
+    family-names: Dong
+    affiliation: >-
+      School of Mechanical, Electrical & Information Engineering,
+      Shandong University, Weihai 264209, China
+    email: 202100800012@mail.sdu.edu.cn
+  - given-names: Ming
+    family-names: Wang
+    affiliation: >-
+      Inspur Cloud Information Technology Co., Ltd., Jinan 250101, China;
+      School of Remote Sensing and Information Engineering,
+      Wuhan University, Wuhan 430079, China
+    email: oyamingo@whu.edu.cn
+repository-code: 'https://github.com/dfm021101/HybriDet'
+url: 'https://doi.org/10.3390/rs17203497'
+license: AGPL-3.0
+version: 1.0.0
+date-released: '2025-10-21'
+keywords:
+  - wildfire detection
+  - remote sensing
+  - object detection
+  - CNN-Transformer hybrid
+  - YOLOv8
+  - HybriDet
+preferred-citation:
+  type: article
+  authors:
+    - family-names: Dong
+      given-names: Fengming
+    - family-names: Wang
+      given-names: Ming
+  title: "HybriDet: A Hybrid Neural Network Combining CNN and Transformer for Wildfire Detection in Remote Sensing Imagery"
+  journal: Remote Sensing
+  year: 2025
+  volume: 17
+  issue: 20
+  start: 3497
+  doi: 10.3390/rs17203497
+  url: 'https://doi.org/10.3390/rs17203497'
+references:
+  - type: software
+    title: Ultralytics YOLO
+    authors:
+      - family-names: Jocher
+        given-names: Glenn
+      - family-names: Chaurasia
+        given-names: Ayush
+      - family-names: Qiu
+        given-names: Jing
+    repository-code: 'https://github.com/ultralytics/ultralytics'
+    license: AGPL-3.0
+    notes: Base detection framework used by this repository.
