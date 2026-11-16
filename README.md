@@ -343,35 +343,6 @@ Suggested reading order: `CS_Attention` → `CoordAtt` → `h_swish` / `h_sigmoi
 
 ---
 
-## Clarifications (FAQ)
-
-### 1. SwinBottle channel split ratio
-
-**Question.** Section 3.2 of the paper states that the feature map is split into “three feature tensors of identical dimensions.” Table 1 channel widths `[32, 64, 128, 256]` are not divisible by 3. Parameter counting suggests `[C/2, C/4, C/4]` matches Table 1 much better than `[C/3, C/3, C/3]`. Which split is used in the implementation?
-
-**Answer.** The released code does **not** split channels as `[C/3, C/3, C/3]` or `[C/2, C/4, C/4]`.
-
-`SwinBottle` follows the **C2f-style** design (`ultralytics/nn/modules/block.py`):
-
-1. Expansion ratio `e = 0.5`, so hidden width `c = C / 2` (where `C` is the stage output channels, e.g. 32 / 64 / 128 / 256).
-2. The Swin Transformer block maps the input to `2c = C` channels.
-3. Those `C` channels are split with `chunk(2, 1)` into **two equal halves** of size `C/2`.
-4. The third path is produced by a `Bottleneck` on the second half, also with width `C/2`.
-5. The three tensors (for `n = 1`) are therefore **identical in shape**: `[C/2, C/2, C/2]`, then concatenated and projected by a `1×1` conv.
-
-So “three feature tensors of identical dimensions” means three branches of width **`C/2`** after expand-and-split, **not** a direct `C/3` partition of `C`.
-
-```python
-# SwinBottle forward (simplified)
-self.c = int(c2 * 0.5)                          # C/2
-self.transformer = SwinTransformerBlock(..., 2 * self.c, ...)
-y = list(self.transformer(x).chunk(2, 1))      # [C/2, C/2]
-y.extend(m(y[-1]) for m in self.m)             # + Bottleneck → C/2
-return self.cv2(torch.cat(y, 1))
-```
-
----
-
 ## Citation
 
 ```bibtex

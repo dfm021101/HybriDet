@@ -354,35 +354,6 @@ YAML 中的出现位置（`HybriDet.yaml` Neck）：
 
 ---
 
-## 常见问题澄清（FAQ）
-
-### 1. SwinBottle 中的通道分割比例
-
-**问题。** 论文第 3.2 节写特征图被分割成“三个维度相同的特征张量”，但表 1 中通道数 `[32, 64, 128, 256]` 不能被 3 整除。参数量估算显示 `[C/2, C/4, C/4]` 比 `[C/3, C/3, C/3]` 更接近表 1。实现里实际采用哪种分割？
-
-**回答。** 开源代码**既不是** `[C/3, C/3, C/3]`，**也不是** `[C/2, C/4, C/4]`。
-
-`SwinBottle` 采用与 **C2f 一致** 的结构（见 `ultralytics/nn/modules/block.py`）：
-
-1. 扩展比 `e = 0.5`，隐层宽度 `c = C / 2`（`C` 为该 stage 输出通道，如 32 / 64 / 128 / 256）。
-2. Swin Transformer 将特征映射到 `2c = C` 通道。
-3. 对这 `C` 个通道用 `chunk(2, 1)` **均分为两路**，每路宽度为 `C/2`。
-4. 第三条路径由作用于第二路的 `Bottleneck` 生成，宽度同样为 `C/2`。
-5. 因此在 `n = 1` 时，三路特征张量形状相同，均为 **`[C/2, C/2, C/2]`**，再经 `1×1` 卷积融合输出。
-
-论文中“三个维度相同的特征张量”指 expand–split 之后宽度为 **`C/2`** 的三路分支，**不是**把原始 `C` 直接三等分为 `C/3`。
-
-```python
-# SwinBottle 前向（简化）
-self.c = int(c2 * 0.5)                          # C/2
-self.transformer = SwinTransformerBlock(..., 2 * self.c, ...)
-y = list(self.transformer(x).chunk(2, 1))      # [C/2, C/2]
-y.extend(m(y[-1]) for m in self.m)             # + Bottleneck → C/2
-return self.cv2(torch.cat(y, 1))
-```
-
----
-
 ## 引用
 
 ```bibtex
